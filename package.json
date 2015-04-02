@@ -5,7 +5,7 @@
   "main": "exp_server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --es_staging server.js",
+    "start": "node --harmony server.js",
     "jshint": "./node_modules/.bin/jshint server.js app elements scripts"
   },
   "author": "Hugo Boyer",
