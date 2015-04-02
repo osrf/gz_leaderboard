@@ -8,9 +8,12 @@ gz_leaderboard is a web app that receives JSON messages from the Gazebo simulato
 
 sudo apt-get install -y redis-server npm nodejs
 
+
 * Install local dependencies
 
-npm install && bower install
+npm install -g bower
+npm install
+bower install
 
 ### Run ###
 
