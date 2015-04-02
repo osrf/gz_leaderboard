@@ -1,0 +1,177 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="gz-register" attributes="">
+
+  <template>
+    Users
+    <button id="button_add"  on-click="{{clickAdd}}" >+</button>
+    <button id="button_rem"  on-click="{{clickRem}}" >-</button>
+    <button id="button_hide" on-click="{{clickHide}}" style="display:none;" >X</button>
+
+    <div id="div_add_user" style="display:none">
+        <input id="user"  type="text" placeholder="user name"/><br>
+        <input id="pass1" type="password" placeholder="password"/><br>
+        <input id="pass2" type="password" placeholder="confirm password"/><br>
+        <button on-click="{{registerUser}}" >Register</button>
+    </div>
+
+    <div id="div_rem_user" style="display:none">
+        <input id="ruser"  type="text" placeholder="user name"/><br>
+        <input id="rpass" type="password" placeholder="password"/><br>
+        <button on-click="{{unregisterUser}}" >Unregister</button>
+    </div>
+  </template>
+ 
+  <script>
+
+    function post(route, data, cb)
+    {
+        console.log('data ' + data);
+        var xmlhttp;
+        xmlhttp=new XMLHttpRequest();
+        xmlhttp.onreadystatechange=function() {
+            console.log("READY: " + xmlhttp.readyState + " STATUS: " +  xmlhttp.status);
+            if (xmlhttp.readyState==4)
+            {
+                if(xmlhttp.status == 500) cb("Internal Server Error");
+                if(xmlhttp.status == 501) cb("Not Implemented");
+                if(xmlhttp.status == 502) cb("Bad Gateway");
+                if(xmlhttp.status == 503) cb("Service Unavailable");
+                if(xmlhttp.status == 504) cb("Gateway Timeout");
+                if(xmlhttp.status == 505) cb("HTTP Version Not Supported");
+                if(xmlhttp.status == 506) cb("Transparent content negotiation for the request results in a circular reference.");
+                if(xmlhttp.status == 507) cb("Insufficient Storage (WebDAV)");
+                if(xmlhttp.status == 508) cb("Loop Detected (WebDAV)");
+                if(xmlhttp.status == 509) cb("Bandwidth Limit Exceeded (Apache bw/limited extension)");
+                if(xmlhttp.status == 510) cb("Further extensions to the request are required for the server to fulfil it.");
+                if(xmlhttp.status == 511) cb("Network Authentication Required");
+
+                if(xmlhttp.status >= 200 && xmlhttp.status < 300) {
+                    var r = xmlhttp.responseText;
+                    cb(null, r)
+                }
+            }
+        }
+        xmlhttp.open("POST", route, true);
+        xmlhttp.setRequestHeader("Content-Type","application/json");
+        xmlhttp.send(JSON.stringify(data));
+    }
+
+    Polymer({
+        response: null,
+        clickHide: function() {
+            this.$.div_rem_user.style.display = 'none'
+            this.$.div_add_user.style.display = 'none'
+            this.$.button_hide.style.display = 'none'
+            this.$.button_add.style.display = ''
+            this.$.button_rem.style.display = ''
+        },
+        clickAdd: function() {
+              this.$.div_add_user.style.display = 'block'
+              this.$.div_rem_user.style.display = 'none'
+              this.$.button_hide.style.display = ''
+              this.$.button_add.style.display = 'none'
+              this.$.button_rem.style.display = 'none'
+              this.$.user.focus()
+            },
+         clickRem: function() {
+              this.$.div_add_user.style.display = 'none'
+              this.$.div_rem_user.style.display = ''
+              this.$.button_hide.style.display = ''
+              this.$.button_add.style.display = 'none'
+              this.$.button_rem.style.display = 'none'
+              this.$.ruser.focus()
+            },
+         registerUser: function() {
+            // username can't be empty
+            var user = this.$.user.value;
+            var self = this;
+            var close = function() {
+                self.$.div_add_user.style.display = 'none'
+                self.$.button_hide.style.display = 'none'
+                self.$.button_add.style.display = ''
+                self.$.button_rem.style.display = ''
+            }
+            if (user === "")
+            {
+                alert("User name can't be empty");
+                return;
+            }
+            // verify passwords
+            var pass = this.$.pass1.value;
+            var pass2 = this.$.pass2.value;
+            if (pass != pass2)
+            {
+                alert("Passwords don't match");
+                return;
+            }
+            if(pass === "")
+            {
+                alert("Password can't be empty");
+                return;
+            }
+            
+            var x = post("/register", {"user":user, "password": pass}, function(err, res){
+                    console.log(res);
+                    if(err) {
+                        alert("Error connecting to server: " + err);
+                        return;
+                    }
+                    var j = JSON.parse(res)
+                    if(j.success)
+                    {
+                        alert('User ' + user + ' registered successfully');
+                        close() // div.style.display = 'none';
+                    }
+                    else
+                    {
+                        alert('Error: ' + j.error);
+                    }
+                });
+            },
+
+         unregisterUser: function() {
+            var user = this.$.ruser.value;
+            var self = this;
+            var close = function() {
+                self.$.div_rem_user.style.display = 'none'
+                self.$.button_hide.style.display = 'none'
+                self.$.button_add.style.display = ''
+                self.$.button_rem.style.display = ''
+            }
+            if (user === "")
+            {
+                alert("User name can't be empty");
+                return;
+            }
+            var pass = this.$.rpass.value;
+            if (pass === "")
+            {
+                alert("Password is empty");
+                return;
+            }
+            // user already exists
+            var x = post("unregister", {"user":user, "password": pass}, function(err, res){
+                    if(err) {
+                        alert("Error connecting to server: " + err);
+                        return;
+                    }
+                    var j = JSON.parse(res)
+                    if(j.success)
+                    {
+                       alert('User ' + user + ' unregistered successfully');
+                       close()
+                    }
+                    else
+                    {
+                       alert(j.error);
+                    }
+                });
+        }
+    });
+    
+  </script>
+
+</polymer-element>

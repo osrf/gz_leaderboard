@@ -1,0 +1,13 @@
+{
+  "name": "gz-leaderboard",
+  "version": "0.0.0",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.1",
+    "core-ajax": "Polymer/core-ajax#~0.5.4",
+    "paper-tabs": "Polymer/paper-tabs#~0.5.4",
+    "core-pages": "Polymer/core-pages#~0.5.5"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^2.0.0"
+  }
+}

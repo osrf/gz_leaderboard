@@ -1,0 +1,92 @@
+
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="gz-scoring_tow" attributes="timeOutSec">
+
+    <script>
+    'use strict'
+
+    function toSecs(str) {
+      // function accepts a string like "000 00:34:26.203"
+      // and converts it into duration in seconds
+      let numbers = str.split(/[^\d+(\.)]+/).map(Number)
+      let days = numbers[0]
+      let hours = numbers[1]
+      let minutes = numbers[2]
+      let seconds = numbers[3]
+      let total = seconds + 60 * minutes + 3600 * hours + 86400 * days
+      return total
+    }
+
+
+    Polymer({
+        worlds: ['mentor2_tow'],
+        timeOutSec : 0,
+        scoreRun : function(events, run) {
+            console.log(events, 'gz-scoring_tow SCORE (timeout ' + this.timeOutSec + 'sec )')
+            
+            let points = run.points
+            let startTime = 0
+            let isPaused  = true
+            let simTime = 0
+            let isDone = false
+
+            for(let i = 0; i < events.length; i++)
+            {
+                let e = events[i]
+                if(e.type == "sim_state" && e.data.state == "reset") {
+                    simTime = 0
+                    points = 0
+                    startTime = 0
+                    console.log("RESET worlds")
+                }
+
+                /* could be used to prevent cheating
+                if (e.world.paused == "true" && !isDone) {
+                  points = 0
+                  startTime = toSecs(e.world.sim_time)
+                  simTime = startTime
+                  run.status = "Paused"
+                  continue
+                }
+                */
+                
+                if(toSecs(e.world.sim_time) - startTime  > this.timeOutSec) {
+                  run.status = "Timed out"
+                  isDone = true
+                  continue
+                }
+                else {
+                  simTime = toSecs(e.world.sim_time)
+                  run.status = "Running"
+                }
+                if(points < 1 && e.name === 'on_slab_0' && e.data.state === 'inside') {
+                    console.log('slab 0: 1 point')
+                    points += 1
+                }
+                if(points < 2 && e.name === 'on_slab_1' && e.data.state === 'inside') {
+                    console.log('slab 1: 1 point')
+                    points += 1
+                }
+                if(points < 3 && e.name === 'on_slab_2' && e.data.state === 'inside') {
+                    console.log('slab 2: 1 point')
+                    points += 1
+                }
+                if(points < 4 && e.name === 'on_slab_3' && e.data.state === 'inside') {
+                    console.log('slab 3: 1 point')
+                    points += 1
+                    run.state = "Completed"
+                }
+            }
+            
+            run.duration = simTime - startTime
+            run.points = points
+            // expected result:
+            // {status: "Running", points: 2, duration: 14.245}
+            console.log(run, " is the score result")
+        }
+
+    });
+    </script>
+</polymer-element>
