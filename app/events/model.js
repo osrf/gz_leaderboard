@@ -6,7 +6,7 @@
 //
 
 let util = require('util')
-let redis = require("redis").createClient(); 
+let redis = require("redis").createClient();
 
 var exports = module.exports = {}
 let eventsList= 'leaderboard/events'
@@ -16,7 +16,7 @@ redis.on("error", function (err) {
     });
 
 exports.getAll = function(cb) {
-   
+
   console.log('events.getAll');
   redis.lrange(eventsList, 0, -1, function (err, events) {
     if(err) {
@@ -38,8 +38,6 @@ exports.getAll = function(cb) {
   })
 }
 
-
-
 exports.add = function (eventJson, cb) {
   let eventStr = JSON.stringify(eventJson)
   console.log('[add event] ' + eventStr)
@@ -50,7 +48,7 @@ exports.add = function (eventJson, cb) {
         return
       }
       cb(null, eventJson )
-  }); 
+  });
 }
 
 exports.deleteAll = function (cb) {
@@ -58,7 +56,7 @@ exports.deleteAll = function (cb) {
   // remove events list
   redis.del(eventsList, function(err, userId) {
     if (err) {
-      console.error(eventsList + ' [del error]: ' + err) 
+      console.error(eventsList + ' [del error]: ' + err)
       cb(err)
       return
     }

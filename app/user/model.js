@@ -10,7 +10,7 @@
 
 var db = require('../../config.json')
 var util = require('util')
-var redis = require("redis").createClient(); 
+var redis = require("redis").createClient();
 
 var exports = module.exports = {};
 
@@ -33,7 +33,7 @@ redis.on("error", function (err) {
     });
 
 exports.getByName = function(username, cb) {
-   
+
   console.log('user.getByName');
   redis.hget(usermap, username, function (err, userId) {
     if(err) {
@@ -88,7 +88,7 @@ exports.add = function (username, password, role, cb) {
         cb(null, {'username': username, 'role': role, 'id': id})
       });
     });
-  }); 
+  });
 }
 
 
@@ -100,7 +100,7 @@ exports.remove = function (username, userId, cb) {
   // remove username from the user map
   redis.hdel(usermap, username, function(err) {
     if (err) {
-      console.log(usermap + ' [hdel error]: ' + err) 
+      console.log(usermap + ' [hdel error]: ' + err)
       cb(err)
       return
     }
@@ -123,9 +123,16 @@ exports.remove = function (username, userId, cb) {
         // success
         console.log('remove done')
         cb(null, {username: username, id: userId} )
-      })      
+      })
     })
   })
 }
+
+
+exports.deleteAll = function(cb) {
+  console.log('clear all events!!');
+  cb('NOT IMPLEMENTED!');
+}
+
 
 

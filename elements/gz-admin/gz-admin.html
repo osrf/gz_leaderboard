@@ -1,0 +1,136 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="gz-admin" attributes="">
+
+  <template>
+    Admin
+    <button id="button_open"  on-click="{{clickOpen}}" >X</button>
+    <button id="button_hide" on-click="{{clickHide}}" style="display:none;" >X</button>
+
+    <div id="div_admin" style="display:none">
+        <input id="pass" type="password" placeholder="admin password"/><br>
+        <button on-click="{{clearEvents}}">Clear events</button>
+        <button on-click="{{clearAll}}">Clear all</button>
+    </div>
+  </template>
+
+  <script>
+
+    function post(route, data, cb)
+    {
+        console.log('data ' + data);
+        var xmlhttp;
+        xmlhttp=new XMLHttpRequest();
+        xmlhttp.onreadystatechange=function() {
+            console.log("READY: " + xmlhttp.readyState + " STATUS: " +  xmlhttp.status);
+            if (xmlhttp.readyState==4)
+            {
+                if(xmlhttp.status == 500) cb("Internal Server Error");
+                if(xmlhttp.status == 501) cb("Not Implemented");
+                if(xmlhttp.status == 502) cb("Bad Gateway");
+                if(xmlhttp.status == 503) cb("Service Unavailable");
+                if(xmlhttp.status == 504) cb("Gateway Timeout");
+                if(xmlhttp.status == 505) cb("HTTP Version Not Supported");
+                if(xmlhttp.status == 506) cb("Transparent content negotiation for the request results in a circular reference.");
+                if(xmlhttp.status == 507) cb("Insufficient Storage (WebDAV)");
+                if(xmlhttp.status == 508) cb("Loop Detected (WebDAV)");
+                if(xmlhttp.status == 509) cb("Bandwidth Limit Exceeded (Apache bw/limited extension)");
+                if(xmlhttp.status == 510) cb("Further extensions to the request are required for the server to fulfil it.");
+                if(xmlhttp.status == 511) cb("Network Authentication Required");
+
+                if(xmlhttp.status >= 200 && xmlhttp.status < 300) {
+                    var r = xmlhttp.responseText;
+                    cb(null, r)
+                }
+            }
+        }
+        xmlhttp.open("POST", route, true);
+        xmlhttp.setRequestHeader("Content-Type","application/json");
+        xmlhttp.send(JSON.stringify(data));
+    }
+
+    Polymer({
+        response: null,
+        clickHide: function() {
+            this.$.div_admin.style.display = 'none'
+            this.$.button_hide.style.display = 'none'
+            this.$.button_open.style.display = ''
+        },
+        clickOpen: function() {
+              this.$.div_admin.style.display = 'block'
+              this.$.button_hide.style.display = ''
+              this.$.button_open.style.display = 'none'
+              this.$.pass.focus()
+            },
+         clearEvents: function() {
+            var self = this;
+            var close = function() {
+                self.$.div_admin.style.display = 'none'
+                self.$.button_hide.style.display = 'none'
+                self.$.button_open.style.display = ''
+            }
+            // verify passwords
+            var pass = this.$.pass.value;
+            if(pass === "")
+            {
+                alert("Password can't be empty");
+                return;
+            }
+
+            var x = post("/clear_events", {"password": pass}, function(err, res){
+                    console.log(res);
+                    if(err) {
+                        alert("Error connecting to server: " + err);
+                        return;
+                    }
+                    var j = JSON.parse(res)
+                    if(j.success)
+                    {
+                        alert('Events cleared successfully');
+                        close() // div.style.display = 'none';
+                    }
+                    else
+                    {
+                        alert('Error: ' + j.error);
+                    }
+                });
+            },
+
+         clearAll: function() {
+            var self = this;
+            var close = function() {
+                self.$.div_admin.style.display = 'none'
+                self.$.button_hide.style.display = 'none'
+                self.$.button_open.style.display = ''
+            }
+            var pass = this.$.pass.value;
+            if (pass === "")
+            {
+                alert("Password is empty");
+                return;
+            }
+            var x = post("clear_db", {"password": pass}, function(err, res){
+                    if(err) {
+                        alert("Error connecting to server: " + err);
+                        return;
+                    }
+                    var j = JSON.parse(res)
+                    if(j.success)
+                    {
+                       alert('Database cleared successfully');
+                       close()
+                    }
+                    else
+                    {
+                       alert(j.error);
+                    }
+                });
+        }
+    });
+
+  </script>
+
+</polymer-element>
+

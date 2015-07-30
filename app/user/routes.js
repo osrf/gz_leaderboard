@@ -14,7 +14,7 @@ exports.verify = function(username, password, done)
 {
     console.log('verify ' + username + ' ' + password);
     process.nextTick(function () {
-      
+
         // Find the user by username.  If there is no user with the given
         // username, or the password is not correct, set the user to `false` to
         // indicate failure.  Otherwise, return the authenticated `user`.
@@ -105,3 +105,6 @@ exports.unregister = function(req, res) {
     });
 }
 
+exports.clearUsers = function(req, res) {
+  console.log('clear users');
+}

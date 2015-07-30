@@ -5,7 +5,7 @@
     // Perform some behaviour
     console.log('polymer-ready');
     var tmpl = document.querySelector("#tmpl")
-    tmpl.title = "Mentor 2 leaderboard"
+    tmpl.title = "Gazebo course leaderboard"
     tmpl.selected = "leaders"
   })
 

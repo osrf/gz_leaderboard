@@ -1,16 +1,5 @@
-{ "users":[
-     { "id": 1, "username": "myuser", "password": "mypass",  "email": "myuser@example.com" }
-    ,{ "id": 2, "username": "joe",    "password": "joepass", "email": "joe@example.com" }
-    ,{ "id": 3, "username": "bob",    "password": "bobpass", "email": "bob@example.com" }
-  ],
-
-  "worlds":[
-     { "id": 1, "name": "pid.world", "description": "PID tuning experiment" }
-  ],
-
-  "sim_events": [
-	{"id": 1, "user_id":1, "world_id": 1, "event": {"name":"start", "time": "21:00:00"} }
-  ]
-
+{
+  "admin_password" : "gzgz",
+  "port" : 3000
 }
 

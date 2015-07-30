@@ -23,55 +23,55 @@
   <link rel="import" href="elements/elements.html">
   <!-- endbuild-->
 
-  <link rel="import" href="bower_components/paper-tabs/paper-tabs.html" >          
-  <link rel="import" href="bower_components/core-pages/core-pages.html" > 
+  <link rel="import" href="bower_components/paper-tabs/paper-tabs.html" >
+  <link rel="import" href="bower_components/core-pages/core-pages.html" >
 
   <style shim-shadowdom>
-  
+
     body {
       font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
       margin: 0;
       padding: 24px;
       color: #333;
     }
-    
+
     body.core-narrow {
       padding: 8px;
     }
-    
+
     paper-tabs, core-toolbar {
       background-color: #00bcd4;
       color: #fff;
       box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);
     }
-    
+
     core-toolbar paper-tabs {
       box-shadow: none;
     }
-    
+
     paper-tabs[noink][nobar] paper-tab.core-selected {
       color: #ffff8d;
     }
-    
+
     paper-tabs.transparent-teal {
       background-color: transparent;
       color: #00bcd4;
       box-shadow: none;
     }
-    
+
     paper-tabs.transparent-teal::shadow #selectionBar {
       background-color: #00bcd4;
     }
-    
+
     paper-tabs.transparent-teal paper-tab::shadow #ink {
       color: #00bcd4;
     }
-    
+
     h3 {
       font-size: 16px;
       font-weight: 400;
     }
-    
+
   </style>
 
 
@@ -83,16 +83,20 @@
     <a href="/admin">Admin</a>
   </div>
 -->
-
+<div>
   <gz-register id="register"></gz-register>
-  
+</div>
+<div>
+  <gz-admin id="admin"></gz-admin>
+</div>
+
 <!--  <div>
     <br><button onclick="alert('todo!')">Clear data</button>
   </div>
 -->
 
   <div class="hero-unit">
-    
+
     <template is="auto-binding" id="tmpl">
 
     <paper-tabs id='tabs' selected={{selected}} valueattr="sort">
@@ -104,16 +108,15 @@
     </paper-tabs>
 
     <h1>{{title}}</h1>
-  
-   
+
     <gz-leaders id="leaderboard" sorting={{selected}} >
       <gz-scoring_tow timeOutSec="300"/>
     </gz-leaders>
-  
+
     </template>
 
   </div>
-  
+
   <!-- build:js scripts/app.js -->
   <script src="scripts/app.js"></script>
   <!-- endbuild-->

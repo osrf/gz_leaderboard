@@ -14,6 +14,8 @@ var serveStatic = require('serve-static')
 var config = require('./config.json')
 var ConnectRoles = require('connect-roles')
 
+let redis = require("redis").createClient();
+
 // custom models
 let UserRoutes = require('./app/user/routes')
 let UserDb = require('./app/user/model')
@@ -72,7 +74,7 @@ app.use(user.middleware());
 // basic autoh configuration
 let basicConfig = {session: false}
 
-app.get('/admin', 
+app.get('/admin',
         passport.authenticate('basic', basicConfig),
         user.can('access admin page'),
         function (req,res) {
@@ -81,11 +83,11 @@ app.get('/admin',
 
 // curl -v -I http://127.0.0.1:3000/
 // curl -v -I --user bob:secret http://127.0.0.1:3000/
-app.get('/login', 
+app.get('/login',
   passport.authenticate('basic', basicConfig),
   function(req, res){
     console.log("\nGET /login: " + util.inspect(req.user))
-    // avoid transmitting password over the wire 
+    // avoid transmitting password over the wire
     delete req.user.password
     console.log('done')
     res.jsonp( req.user )
@@ -100,8 +102,44 @@ app.get('/logout', function(req, res){
 });
 
 app.post('/register', UserRoutes.register)
-app.post('/unregister', UserRoutes.unregister) 
+app.post('/unregister', UserRoutes.unregister)
 
+//
+// admin section
+//
+app.post('/clear_db', function (req, res) {
+  console.log('POST /clear_db')
+  if(config.admin_password == req.body.password) {
+    //
+    redis.flushdb(function(err) {
+      if (err){
+        res.jsonp({success:false, error: err})
+      }
+      else
+      {
+        res.jsonp({success: true});
+      }
+
+    })
+  }
+  else {
+    res.jsonp({success:false, error: 'Incorrect admin password'})
+  }
+})
+
+app.post('/clear_events', function (req, res) {
+  console.log('POST /clear_events')
+  if(config.admin_password == req.body.password) {
+    Events.deleteAll( function(err) {
+      if(err)
+        throw err
+      res.jsonp({success: true})
+    })
+  }
+  else {
+    res.jsonp({success:false, error: 'Incorrect admin password'})
+  }
+})
 
 app.get('/api/raw_posts', function (req, res) {
   console.log('GET /api/raw_posts');
@@ -119,7 +157,7 @@ app.get('/api/register', function (req, res) {
    console.log('register ' + util.inspect(req.query)  );
 });
 
-app.post('/events/new', 
+app.post('/events/new',
   passport.authenticate('basic', basicConfig),
     function(req, res){
       console.log('req.user: ' + util.inspect(req.user))
@@ -141,9 +179,9 @@ app.post('/events/new',
 
 app.use(serveStatic(__dirname ));
 
-console.log('Listening on port 3000');
+console.log('Listening on port ' + config.port);
 
 //httpServer.listen(80);
 //httpsServer.listen(443);
-httpsServer.listen(3000);
+httpsServer.listen(config.port);
 
